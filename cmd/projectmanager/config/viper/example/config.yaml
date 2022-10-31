@@ -1,0 +1,14 @@
+db:
+  type: mongoDB
+  mongoDB:
+    protocol: "mongodb"
+    hostname: "mongodb"
+    port: "27017"
+    databaseName: "project_manager"
+    dependencyEndpoint: "http://dependencymanager:8080"
+auth:
+  type: ory
+  ory:
+    ketoReadEndpoint: http://keto:4466
+    ketoWriteEndpoint: http://keto:4467
+    kratosEndpoint: http://kratos:4433

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: projectmanager
+  name: projectmanager
+  namespace: secu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: projectmanager
+  template:
+    metadata:
+      labels:
+        app: projectmanager
+    spec:
+      containers:
+        - image: ${IMAGE}:${VERSION}
+          name: projectmanager
+          args: ["-config=/.projectmanager/config/config.yaml"]
+          volumeMounts:
+            - name: mongo
+              mountPath: /.secret/mongodb/
+              readOnly: true
+            - name: config
+              mountPath: /.projectmanager/config/
+      volumes:
+        - name: mongo
+          secret:
+            secretName: mongodb
+        - name: config
+          configMap:
+            name: projectmanager-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: projectmanager
+  namespace: secu
+spec:
+  selector:
+    app: projectmanager
+  ports:
+    - port: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: projectmanager-config
+  namespace: secu
+data:
+  config.yaml: |
+    db:
+      type: mongoDB
+      mongoDB:
+        protocol: "mongodb"
+        hostname: "mongodb"
+        port: "27017"
+        databaseName: "project_manager"
+        dependencyEndpoint: "http://dependencymanager:8080"
+        auth:
+          user: root
+          passwordFilepath: "/.secret/mongodb/mongodb-root-password"

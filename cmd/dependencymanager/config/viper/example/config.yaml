@@ -1,0 +1,4 @@
+type: dependencyTrack
+dependencyTrack:
+  endpoint: "http://dependency-track-apiserver.dependency-track.svc.cluster.local:80"
+  apiKey: ""

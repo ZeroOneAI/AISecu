@@ -1,0 +1,478 @@
+definitions:
+  gin.Account:
+    properties:
+      id:
+        type: string
+      nickname:
+        type: string
+      registry_type:
+        type: string
+      registry_url:
+        type: string
+      username:
+        type: string
+    type: object
+  gin.AccountPrivate:
+    properties:
+      id:
+        type: string
+      password:
+        type: string
+    type: object
+  gin.AddAccountRequest:
+    properties:
+      account_nickname:
+        type: string
+      account_password:
+        type: string
+      account_username:
+        type: string
+      registry_type:
+        type: string
+      registry_url:
+        type: string
+    required:
+    - account_password
+    - account_username
+    - registry_type
+    type: object
+  gin.AddAccountResponse:
+    properties:
+      account_id:
+        type: string
+    type: object
+  gin.AddRepositoryRequest:
+    properties:
+      account_id:
+        type: string
+      repository_name:
+        type: string
+    required:
+    - account_id
+    - repository_name
+    type: object
+  gin.AddRepositoryResponse:
+    properties:
+      repository_id:
+        type: string
+    type: object
+  gin.CreateOrUpdateImageRequest:
+    properties:
+      tag:
+        type: string
+    required:
+    - tag
+    type: object
+  gin.CreateOrUpdateImageResponse:
+    properties:
+      image_id:
+        type: string
+    type: object
+  gin.DeleteAccountRequest:
+    type: object
+  gin.DeleteAccountResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  gin.DeleteRepositoryRequest:
+    type: object
+  gin.DeleteRepositoryResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  gin.GetAccountPrivateResponse:
+    properties:
+      account_private:
+        $ref: '#/definitions/gin.AccountPrivate'
+    type: object
+  gin.GetAccountResponse:
+    properties:
+      account:
+        $ref: '#/definitions/gin.Account'
+    type: object
+  gin.GetLatestImageByRepository:
+    properties:
+      image:
+        $ref: '#/definitions/gin.Image'
+    type: object
+  gin.GetRepositoryResponse:
+    properties:
+      repository:
+        $ref: '#/definitions/gin.Repository'
+    type: object
+  gin.Image:
+    properties:
+      id:
+        type: string
+      repository_id:
+        type: string
+      tag:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  gin.ListAccountResponse:
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/gin.Account'
+        type: array
+    type: object
+  gin.ListImageByRepository:
+    properties:
+      images:
+        items:
+          $ref: '#/definitions/gin.Image'
+        type: array
+    type: object
+  gin.ListRegistryTypeResponse:
+    properties:
+      repository_types:
+        items:
+          type: string
+        type: array
+    type: object
+  gin.ListRepositoryResponse:
+    properties:
+      repositories:
+        items:
+          $ref: '#/definitions/gin.Repository'
+        type: array
+    type: object
+  gin.Repository:
+    properties:
+      accountId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  gin.UpdateAccountNicknameRequest:
+    properties:
+      nickname:
+        type: string
+    required:
+    - nickname
+    type: object
+  gin.UpdateAccountNicknameResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  gin.UpdateAccountPasswordRequest:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  gin.UpdateAccountPasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/account:
+    post:
+      consumes:
+      - application/json
+      description: add new account
+      parameters:
+      - description: 새로운 Account 등록
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.AddAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.AddAccountResponse'
+      summary: add new account
+  /api/account/delete/{accountId}:
+    delete:
+      consumes:
+      - application/json
+      description: delete account
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      - description: Account 삭제
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.DeleteAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.DeleteAccountResponse'
+      summary: delete account
+  /api/account/detail/{accountId}:
+    get:
+      consumes:
+      - application/json
+      description: get account info by id
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.GetAccountResponse'
+      summary: get account info by id
+  /api/account/list:
+    get:
+      consumes:
+      - application/json
+      description: list current accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.ListAccountResponse'
+      summary: list current accounts
+  /api/account/nickname/{accountId}:
+    put:
+      consumes:
+      - application/json
+      description: update nickname of existing account
+      parameters:
+      - description: 기존 Account Nickname 수정
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.UpdateAccountNicknameRequest'
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.UpdateAccountNicknameResponse'
+      summary: update nickname of existing account
+  /api/account/password/{accountId}:
+    put:
+      consumes:
+      - application/json
+      description: update password of existing account
+      parameters:
+      - description: 기존 Account Password 수정
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.UpdateAccountPasswordRequest'
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.UpdateAccountPasswordResponse'
+      summary: update password of existing account
+  /api/registry/list:
+    get:
+      consumes:
+      - application/json
+      description: list registry type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.ListRegistryTypeResponse'
+      summary: list registry type
+  /api/repository:
+    get:
+      consumes:
+      - application/json
+      description: list current repository
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.ListRepositoryResponse'
+      summary: list current repository
+    post:
+      consumes:
+      - application/json
+      description: add new repository
+      parameters:
+      - description: Repository 등록
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.AddRepositoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.AddRepositoryResponse'
+      summary: add new repository
+  /api/repository/delete/{repositoryId}:
+    delete:
+      consumes:
+      - application/json
+      description: delete repository
+      parameters:
+      - description: Repository ID
+        in: path
+        name: repositoryId
+        required: true
+        type: string
+      - description: Repository 삭제
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.DeleteRepositoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.DeleteRepositoryResponse'
+      summary: delete repository
+  /api/repository/detail/{repositoryId}:
+    get:
+      consumes:
+      - application/json
+      description: get repository info by id
+      parameters:
+      - description: Repository ID
+        in: path
+        name: repositoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.GetRepositoryResponse'
+      summary: get repository info by id
+  /api/repository/image/{repositoryId}:
+    put:
+      consumes:
+      - application/json
+      description: Create or Update Image
+      parameters:
+      - description: Image 정보
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/gin.CreateOrUpdateImageRequest'
+      - description: Repository ID
+        in: path
+        name: repositoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.CreateOrUpdateImageResponse'
+      summary: Create or Update Image
+  /api/repository/images/{repositoryId}:
+    get:
+      consumes:
+      - application/json
+      description: List Image By Repository
+      parameters:
+      - description: Repository ID
+        in: path
+        name: repositoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.ListImageByRepository'
+      summary: List Image By Repository
+  /api/repository/latest/{repositoryId}:
+    get:
+      consumes:
+      - application/json
+      description: Get Latest Image by Repository
+      parameters:
+      - description: Repository ID
+        in: path
+        name: repositoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.GetLatestImageByRepository'
+      summary: Get Latest Image by Repository
+  /internal/account/{accountId}/private:
+    get:
+      consumes:
+      - application/json
+      description: get account info by id
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.GetAccountPrivateResponse'
+      summary: get account info by id
+swagger: "2.0"

@@ -1,0 +1,7 @@
+userInfoEndpoint: "http://projectmanager:8080"
+scanner:
+  type: zerooneScanner
+  zerooneScanner:
+    namespace: secu
+    scannerImage: zerooneai/scanner:t0.0.4
+    resultSenderImage: zerooneai/resultsender:dependencytrack-0.0.3

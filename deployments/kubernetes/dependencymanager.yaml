@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: dependencymanager
+  name: dependencymanager
+  namespace: secu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dependencymanager
+  template:
+    metadata:
+      labels:
+        app: dependencymanager
+    spec:
+      containers:
+      - image: ${IMAGE}:${VERSION}
+        name: dependencymanager
+        args: ["-config=/.dependencymanager/config/config.yaml"]
+        volumeMounts:
+          - name: config
+            mountPath: /.dependencymanager/config/
+      volumes:
+        - name: config
+          configMap:
+            name: dependencymanager-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dependencymanager
+  namespace: secu
+spec:
+  selector:
+    app: dependencymanager
+  ports:
+    - port: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: dependencymanager-config
+  namespace: secu
+data:
+  # TODO remove secret
+  config.yaml: |
+    type: dependencyTrack
+    dependencyTrack:
+      endpoint: "http://dependency-track-apiserver.dependency-track.svc.cluster.local:80"
+      apiKey: ""
